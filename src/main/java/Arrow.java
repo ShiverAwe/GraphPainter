@@ -1,5 +1,3 @@
-package main.java;
-
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -74,5 +72,9 @@ public class Arrow extends Group {
 
     public Color getColor() {
         return color;
+    }
+
+    public void setWidth(int width) {
+        this.line.setStrokeWidth(width);
     }
 }

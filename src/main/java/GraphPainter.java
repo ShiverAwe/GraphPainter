@@ -1,4 +1,3 @@
-package main.java;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
@@ -38,7 +37,6 @@ public class GraphPainter extends Group{
     public void addEdge(int i, int j) {
         if (hasEdge(i, j)) return;
 
-        System.out.println("Adding edge "+ i + " " + j);
         Arrow link = new Arrow(
                 getPointPositionX( i ),
                 getPointPositionY( i ),
@@ -46,13 +44,12 @@ public class GraphPainter extends Group{
                 getPointPositionY( j )
         );
 
-        link.setColor(Color.RED);
+        link.setColor(linkColor);
 
         if (!links.containsKey(i)) links.put(i, new TreeMap<>());
 
         links.get(i).put(j, link);
         this.getChildren().add(link);
-
     }
 
     public boolean alone (int i) {
@@ -106,6 +103,7 @@ public class GraphPainter extends Group{
                     if (hasEdge(i, j)){
                         Arrow link = links.get(i).get(j);
                         link.setColor(linkColor);
+                        link.setWidth(1);
                     }
                 }
             }
@@ -118,11 +116,12 @@ public class GraphPainter extends Group{
 
     public void addRandomEdge(){
         int i; int j;
+        int noWhileTrue = 1000;
         do {
             i = (int) (Math.random() * points.size());
             j = (int) (Math.random() * points.size());
-        } while (i == j || hasEdge(i, j));  // we don't want to add edges (i, i)
-
+            if (noWhileTrue-- < 0) return;
+        } while ((i == j || hasEdge(i, j)));  // we don't want to add edges (i, i)
         addEdge(i, j);
     }
 
@@ -143,22 +142,27 @@ public class GraphPainter extends Group{
             visitControl.visit(number);
 
             // seeking next random available node.
-            int nextNumber = -1; int noWhileTrue = 1000; boolean hasNext = true;
+            int nextNumber = -1;
+            int noWhileTrue = 1000; // searching iterations limit
+            boolean hasNext = true;
             while ((!hasEdge(number, nextNumber) || visitControl.isVisited(nextNumber) )) {
-                nextNumber = (int) (size() * Math.random());
+
+                nextNumber = (int) ( Math.random() * size() );
                 if ( --noWhileTrue < 0 ) { hasNext = false ; break; }
             }
-            if (!hasNext) {
-                break;
-            }
+
+            // quit if nowhere to go
+            if (!hasNext) break;
 
             visitControl.visit(nextNumber);
             points.get(nextNumber).setFill(color);
             System.out.println(number + " " + nextNumber + " " + hasEdge(number, nextNumber));
             links.get(number).get(nextNumber).setColor(color);
+            links.get(number).get(nextNumber).setWidth(5);
 
             if (hasEdge(prevNumber, number)) {
                 links.get(prevNumber).get(number).setColor(color);
+                links.get(prevNumber).get(number).setWidth(5);
             }
 
             try {
@@ -170,6 +174,7 @@ public class GraphPainter extends Group{
             prevNumber = number;
             number = nextNumber;
         }
+
         System.out.println("End of walking");
 
     }
