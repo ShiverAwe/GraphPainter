@@ -16,12 +16,10 @@ public class GraphPainter extends Group{
     double radius;
 
     ArrayList< Circle > points = new ArrayList<>();
-
     double pointRadius = 15;
     Color pointColor = Color.BLACK;
 
     TreeMap< Integer, TreeMap< Integer, Arrow > > links = new TreeMap<>();
-
     Color linkColor = Color.RED;
 
     public void addNode(){
@@ -36,6 +34,8 @@ public class GraphPainter extends Group{
 
     public void addEdge(int i, int j) {
         if (hasEdge(i, j)) return;
+        if (i > size() || i<0) throw new IllegalArgumentException("No such node number : " + i);
+        if (j > size() || j<0) throw new IllegalArgumentException("No such node number : " + j);
 
         Arrow link = new Arrow(
                 getPointPositionX( i ),
@@ -71,7 +71,11 @@ public class GraphPainter extends Group{
         return (y * radius) + centerY;
     }
 
-    void updatePosition(){
+
+    /**
+     * sets position of all nodes and arrows to normal
+     */
+    public void updatePosition(){
         for (int i = 0; i < points.size(); i++) {
 
             points.get(i).setCenterX(getPointPositionX(i));
@@ -94,7 +98,7 @@ public class GraphPainter extends Group{
         }
     }
 
-    void setDefaultColors(){
+    public void setDefaultColors(){
         for (int i = 0; i < points.size(); i++) {
             points.get(i).setRadius(pointRadius);
             points.get(i).setFill(pointColor);
@@ -125,14 +129,18 @@ public class GraphPainter extends Group{
         addEdge(i, j);
     }
 
+    /**
+     * Walks through the graph an paints path into blue color
+     * @param number of starting node
+     */
     public void GO(int number) {
         setDefaultColors();
 
-        // To check if we have already been there
+        // To visit each node only once
         VisitControl visitControl = new VisitControl(size());
 
         // In that color we paint path
-        Color color = Color.BLUE; // new Color(Math.random(), Math.random(), Math.random(), 1);
+        Color color = Color.BLUE;
 
         int prevNumber = number; // previous visited node;
 
@@ -145,6 +153,7 @@ public class GraphPainter extends Group{
             int nextNumber = -1;
             int noWhileTrue = 1000; // searching iterations limit
             boolean hasNext = true;
+            // searching next available to go node
             while ((!hasEdge(number, nextNumber) || visitControl.isVisited(nextNumber) )) {
 
                 nextNumber = (int) ( Math.random() * size() );

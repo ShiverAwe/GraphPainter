@@ -45,19 +45,19 @@ public class Arrow extends Group {
         // Calculating arrow points
         double diffX = endX - startX;
         double diffY = endY - startY;
-        boolean reverse = diffY<0 ? false : true;
+        boolean reverse = diffY<0 ? false : true; // if arrow looks up - reverse it
         double div = diffX / diffY;
         double alpha = Math.atan(div) + (reverse?Math.PI:0); // +pi to turn arrow on 180
         double alphaPlus =  alpha + (1.0/10);
         double alphaMinus = alpha - (1.0/10);
-        // Calculating arrowPoints
+
         double X1 = Math.sin(alphaPlus) * 20 + endX;
         double Y1 = Math.cos(alphaPlus) * 20 + endY;
         double X2 = Math.sin(alphaMinus) * 20 + endX;
         double Y2 = Math.cos(alphaMinus) * 20 + endY;
         // Setting arrow points
         triangle.getPoints().addAll(
-                (double)endX, (double)endY,
+                endX, endY,
                 X1, Y1,
                 X2, Y2
         );
